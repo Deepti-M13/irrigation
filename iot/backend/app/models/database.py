@@ -38,6 +38,7 @@ class Field(Base):
     planting_date = Column(DateTime, nullable=True)
     farm_name = Column(String, nullable=True)
     optimal_moisture_level = Column(Float, default=40.0)
+    is_pump_on = Column(Boolean, default=False)
     
     owner = relationship("Farmer", back_populates="fields")
     sensor_data = relationship("SensorData", back_populates="field")

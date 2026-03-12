@@ -2,7 +2,7 @@ from fastapi import APIRouter, Depends
 from sqlalchemy.orm import Session
 from ..db.session import get_db
 from ..models.database import SensorData, Field, Farmer
-from ..schemas.schemas import SensorDataCreate
+from ..schemas.schemas import SensorDataCreate, PumpControl
 from ..services.prediction import predictor
 from ..services.weather import get_weather
 from ..services.twilio_service import twilio_service
@@ -67,3 +67,21 @@ async def receive_sensor_data(data: SensorDataCreate, db: Session = Depends(get_
         "irrigation_recommendation": irrigation_need,
         "pump_action": pump_action
     }
+
+@router.post("/control")
+async def control_pump(data: PumpControl, db: Session = Depends(get_db)):
+    field = db.query(Field).filter(Field.id == data.field_id).first()
+    if not field:
+        # Fallback to farmer_id if not found as field_id
+        field = db.query(Field).filter(Field.farmer_id == data.field_id).first()
+        
+    if not field:
+        return {"status": "error", "message": "Field not found"}
+        
+    if data.action == "START":
+        field.is_pump_on = True
+    else:
+        field.is_pump_on = False
+        
+    db.commit()
+    return {"status": "success", "is_pump_on": field.is_pump_on}

@@ -5,7 +5,7 @@ import axios from 'axios';
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 
-const Login = ({ onLogin, onSwitchToRegister }) => {
+const Login = ({ onLogin, onSwitchToRegister, t }) => {
     const [username, setUsername] = useState('');
     const [password, setPassword] = useState('');
     const [error, setError] = useState('');
@@ -52,8 +52,8 @@ const Login = ({ onLogin, onSwitchToRegister }) => {
                         <div className="inline-flex items-center justify-center w-16 h-16 rounded-2xl bg-primary/10 mb-6">
                             <Droplets className="w-8 h-8 text-primary" />
                         </div>
-                        <h2 className="font-display text-3xl font-extrabold mb-2 tracking-tight text-foreground">Welcome Back</h2>
-                        <p className="text-muted-foreground text-sm font-medium">Log in to your GraminLink command center</p>
+                        <h2 className="font-display text-3xl font-extrabold mb-2 tracking-tight text-foreground">{t('welcome_back')}</h2>
+                        <p className="text-muted-foreground text-sm font-medium">{t('login_command_center')}</p>
                     </div>
 
                     {error && (
@@ -69,7 +69,7 @@ const Login = ({ onLogin, onSwitchToRegister }) => {
                     <form onSubmit={handleSubmit} className="space-y-6">
                         <div className="space-y-2">
                             <div className="flex justify-between items-center ml-1">
-                                <label className="text-[11px] font-bold uppercase tracking-wider text-muted-foreground">Phone or Email</label>
+                                <label className="text-[11px] font-bold uppercase tracking-wider text-muted-foreground">{t('phone_or_email')}</label>
                             </div>
                             <div className="relative">
                                 <UserPlus className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground/60" />
@@ -77,7 +77,7 @@ const Login = ({ onLogin, onSwitchToRegister }) => {
                                     type="text"
                                     value={username}
                                     onChange={(e) => setUsername(e.target.value)}
-                                    placeholder="your phone number or email"
+                                    placeholder={t('phone_or_email').toLowerCase()}
                                     className="pl-12 h-14 bg-secondary/30 border-border focus:border-primary/50 focus:ring-primary/20 transition-all rounded-2xl text-foreground placeholder:text-muted-foreground/50"
                                     required
                                 />
@@ -86,8 +86,8 @@ const Login = ({ onLogin, onSwitchToRegister }) => {
 
                         <div className="space-y-2">
                             <div className="flex justify-between items-center ml-1">
-                                <label className="text-[11px] font-bold uppercase tracking-wider text-muted-foreground">Password</label>
-                                <button type="button" className="text-[10px] font-bold text-primary hover:underline">Forgot?</button>
+                                <label className="text-[11px] font-bold uppercase tracking-wider text-muted-foreground">{t('password_label')}</label>
+                                <button type="button" className="text-[10px] font-bold text-primary hover:underline">{t('forgot')}</button>
                             </div>
                             <div className="relative">
                                 <Lock className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground/60" />
@@ -111,7 +111,7 @@ const Login = ({ onLogin, onSwitchToRegister }) => {
                                 <Loader2 className="w-5 h-5 animate-spin" />
                             ) : (
                                 <>
-                                    Log In <ArrowRight className="w-5 h-5" />
+                                    {t('login_btn')} <ArrowRight className="w-5 h-5" />
                                 </>
                             )}
                         </Button>
@@ -121,7 +121,7 @@ const Login = ({ onLogin, onSwitchToRegister }) => {
                         <div className="absolute inset-0 flex items-center pointer-events-none">
                             <div className="w-full border-t border-border"></div>
                         </div>
-                        <span className="relative bg-card px-4 text-[10px] font-bold uppercase tracking-[0.2em] text-muted-foreground/40">New to GraminLink?</span>
+                        <span className="relative bg-card px-4 text-[10px] font-bold uppercase tracking-[0.2em] text-muted-foreground/40">{t('new_to_gl')}</span>
                     </div>
 
                     <div className="mt-8 text-center">
@@ -129,14 +129,14 @@ const Login = ({ onLogin, onSwitchToRegister }) => {
                             onClick={onSwitchToRegister}
                             className="group flex items-center justify-center gap-2 mx-auto text-foreground font-bold hover:text-primary transition-colors py-2 px-4 rounded-xl border border-border hover:border-primary/30 bg-secondary/10"
                         >
-                            Create a Free Account
+                            {t('create_free_acc')}
                             <ArrowRight className="w-4 h-4 transition-transform group-hover:translate-x-1" />
                         </button>
                     </div>
                 </div>
 
                 <div className="mt-8 text-center">
-                    <p className="text-[10px] font-bold text-muted-foreground/40 uppercase tracking-[0.3em]">Precision Irrigation System v4.0</p>
+                    <p className="text-[10px] font-bold text-muted-foreground/40 uppercase tracking-[0.3em]">{t('v4_msg')}</p>
                 </div>
             </motion.div>
         </div>

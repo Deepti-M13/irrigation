@@ -72,7 +72,7 @@ async def get_field_status(field_id: int, db: Session = Depends(get_db)):
             "image_date": latest_satellite.image_date.isoformat() if latest_satellite and latest_satellite.image_date else None
         },
         "weather": weather_info,
-        "pump_status": "OFF",
+        "pump_status": "ON" if field.is_pump_on else "OFF",
         "farmer_name": farmer.name if farmer else "Farmer",
         "farmer_village": farmer.village if farmer else "Unknown",
         "ai_insights": ai_insights

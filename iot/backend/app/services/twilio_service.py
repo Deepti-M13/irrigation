@@ -19,7 +19,10 @@ LANGUAGE_MAP = {
     "Hindi": {"lang": "hi-IN", "voice": "Polly.Aditi"},
     "Telugu": {"lang": "te-IN", "voice": "Polly.Aditi"},
     "Tamil": {"lang": "ta-IN", "voice": "Polly.Aditi"},
-    "Kannada": {"lang": "kn-IN", "voice": "Polly.Aditi"}
+    "Kannada": {"lang": "kn-IN", "voice": "Polly.Aditi"},
+    "Marathi": {"lang": "mr-IN", "voice": "Polly.Aditi"},
+    "Bengali": {"lang": "bn-IN", "voice": "Polly.Aditi"},
+    "Gujarati": {"lang": "gu-IN", "voice": "Polly.Aditi"}
 }
 
 class TwilioVoiceService:
@@ -58,6 +61,9 @@ class TwilioVoiceService:
         gather.say("తెలుగు కోసం 3 నొక్కండి.", voice="Polly.Aditi", language="te-IN")
         gather.say("தமிழுக்கு 4 அழுத்தவும்.", voice="Polly.Aditi", language="ta-IN")
         gather.say("ಕನ್ನಡಕ್ಕಾಗಿ 5 ಒತ್ತಿರಿ.", voice="Polly.Aditi", language="kn-IN")
+        gather.say("मराठीसाठी 6 दाबा.", voice="Polly.Aditi", language="mr-IN")
+        gather.say("বাংলার জন্য 7 টিপুন।", voice="Polly.Aditi", language="bn-IN")
+        gather.say("ગુજરાતી માટે 8 દબાવો.", voice="Polly.Aditi", language="gu-IN")
         
         response.append(gather)
         response.redirect(f"{base_url}/api/v1/voice/language-selection")
@@ -80,7 +86,10 @@ class TwilioVoiceService:
             "Hindi": "मिट्टी की नमी अभी भी कम है। सिंचाई जारी रखने के लिए 1 दबाएं। रोकने के लिए 2 दबाएं।",
             "Telugu": "నేల తేమ ఇంకా తక్కువగా ఉంది. సాగును కొనసాగించడానికి 1 నొక్కండి. నిలిపివేయడానికి 2 నొక్కండి.",
             "Tamil": "மண் ஈரப்பதம் இன்னும் குறைவாக உள்ளது. நீர்ப்பாசனத்தைத் தொடர 1 ஐ அழுத்தவும். நிறுத்த 2 ஐ அழுத்தவும்.",
-            "Kannada": "ಮಣ್ಣಿನ ತೇವಾಂಶ ಇನ್ನೂ ಕಡಿಮೆಯಿದೆ. ನೀರಾವರಿ ಮುಂದುವರಿಸಲು 1 ಒತ್ತಿರಿ. ನಿಲ್ಲಿಸಲು 2 ಒತ್ತಿರಿ."
+            "Kannada": "ಮಣ್ಣಿನ ತೇವಾಂಶ ಇನ್ನೂ ಕಡಿಮೆಯಿದೆ. ನೀರಾವರಿ ಮುಂದುವರಿಸಲು 1 ಒತ್ತಿರಿ. ನಿಲ್ಲಿಸಲು 2 ಒತ್ತಿರಿ.",
+            "Marathi": "जमिनीतील ओलावा अजूनही कमी आहे. सिंचन सुरू ठेवण्यासाठी 1 दाबा. थांबवण्यासाठी 2 दाबा.",
+            "Bengali": "মাটির আর্দ্রতা এখনও কম। সেচ চালিয়ে যেতে 1 টিপুন। বন্ধ করতে 2 টিপুন।",
+            "Gujarati": "જમીનનો ભેજ હજુ ઓછો છે. સિંચાઈ ચાલુ રાખવા માટે 1 દબાવો. બંધ કરવા માટે 2 દબાવો。"
         }
         
         text = alert_texts.get(language, alert_texts["English"])

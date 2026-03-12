@@ -116,3 +116,7 @@ class DashboardStats(BaseModel):
 class ProfileUpdate(BaseModel):
     village: Optional[str] = None
     crop_type: Optional[str] = None
+
+class PumpControl(BaseModel):
+    field_id: int
+    action: str # "START" or "STOP"

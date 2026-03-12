@@ -5,7 +5,7 @@ import axios from 'axios';
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 
-const Register = ({ onRegister, onSwitchToLogin }) => {
+const Register = ({ onRegister, onSwitchToLogin, t }) => {
     const [formData, setFormData] = useState({
         name: '',
         phone_number: '',
@@ -82,8 +82,8 @@ const Register = ({ onRegister, onSwitchToLogin }) => {
                         <div className="inline-flex items-center justify-center w-16 h-16 rounded-2xl bg-primary/10 mb-6">
                             <UserPlus className="w-8 h-8 text-primary" />
                         </div>
-                        <h2 className="font-display text-3xl font-extrabold mb-2 tracking-tight">Farmer Enrollment</h2>
-                        <p className="text-muted-foreground text-sm font-medium">Join the GraminLink AI precision irrigation network</p>
+                        <h2 className="font-display text-3xl font-extrabold mb-2 tracking-tight">{t('farmer_enrollment')}</h2>
+                        <p className="text-muted-foreground text-sm font-medium">{t('join_network')}</p>
                     </div>
 
                     {error && (
@@ -98,7 +98,7 @@ const Register = ({ onRegister, onSwitchToLogin }) => {
 
                     <form onSubmit={handleSubmit} className="grid grid-cols-1 md:grid-cols-2 gap-6">
                         <div className="space-y-2">
-                            <label className="text-[10px] font-bold uppercase tracking-wider text-muted-foreground ml-1">Full Name</label>
+                            <label className="text-[10px] font-bold uppercase tracking-wider text-muted-foreground ml-1">{t('full_name')}</label>
                             <div className="relative">
                                 <User className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground/60" />
                                 <Input
@@ -106,14 +106,14 @@ const Register = ({ onRegister, onSwitchToLogin }) => {
                                     value={formData.name}
                                     onChange={handleChange}
                                     required
-                                    placeholder="your name"
+                                    placeholder={t('full_name').toLowerCase()}
                                     className="pl-12 h-14 bg-secondary/30 border-border focus:border-primary/50 transition-all rounded-2xl"
                                 />
                             </div>
                         </div>
 
                         <div className="space-y-2">
-                            <label className="text-[10px] font-bold uppercase tracking-wider text-muted-foreground ml-1">Phone Number</label>
+                            <label className="text-[10px] font-bold uppercase tracking-wider text-muted-foreground ml-1">{t('phone_number')}</label>
                             <div className="relative">
                                 <Phone className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground/60" />
                                 <Input
@@ -128,7 +128,7 @@ const Register = ({ onRegister, onSwitchToLogin }) => {
                         </div>
 
                         <div className="space-y-2">
-                            <label className="text-[10px] font-bold uppercase tracking-wider text-muted-foreground ml-1">Village Location</label>
+                            <label className="text-[10px] font-bold uppercase tracking-wider text-muted-foreground ml-1">{t('village_loc')}</label>
                             <div className="relative">
                                 <MapPin className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground/60" />
                                 <Input
@@ -143,7 +143,7 @@ const Register = ({ onRegister, onSwitchToLogin }) => {
                         </div>
 
                         <div className="space-y-2">
-                            <label className="text-[10px] font-bold uppercase tracking-wider text-muted-foreground ml-1">Password</label>
+                            <label className="text-[10px] font-bold uppercase tracking-wider text-muted-foreground ml-1">{t('password_label')}</label>
                             <div className="relative">
                                 <Lock className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground/60" />
                                 <Input
@@ -161,7 +161,7 @@ const Register = ({ onRegister, onSwitchToLogin }) => {
                         <div className="md:col-span-2 p-4 bg-primary/5 rounded-2xl flex items-start gap-4 border border-primary/10">
                             <ShieldPlus className="w-5 h-5 text-primary mt-1 shrink-0" />
                             <p className="text-[10px] text-muted-foreground leading-relaxed font-medium">
-                                Account is verified via SMS. By registering, you agree to receive automated AI calls for farm health monitoring and irrigation advice.
+                                {t('account_verified_msg')}
                             </p>
                         </div>
 
@@ -174,7 +174,7 @@ const Register = ({ onRegister, onSwitchToLogin }) => {
                                 <Loader2 className="w-5 h-5 animate-spin" />
                             ) : (
                                 <>
-                                    Complete Registration <ArrowRight className="w-5 h-5 transition-transform group-hover:translate-x-1" />
+                                    {t('complete_reg')} <ArrowRight className="w-5 h-5 transition-transform group-hover:translate-x-1" />
                                 </>
                             )}
                         </Button>
@@ -182,20 +182,20 @@ const Register = ({ onRegister, onSwitchToLogin }) => {
 
                     <div className="mt-10 text-center">
                         <p className="text-sm text-muted-foreground font-medium">
-                            Already have an account?{" "}
+                            {t('already_have_acc')}{" "}
                             <button
                                 onClick={onSwitchToLogin}
                                 className="text-primary font-bold hover:underline underline-offset-4 ml-1"
                             >
-                                Log in here
+                                {t('login_here')}
                             </button>
                         </p>
                     </div>
                 </div>
 
                 <div className="mt-8 flex flex-wrap items-center justify-center gap-x-8 gap-y-4 text-[10px] font-bold uppercase tracking-[0.2em] text-muted-foreground/50">
-                    <span className="flex items-center gap-2 px-3 py-1 bg-secondary/20 rounded-lg"><CheckCircle2 className="w-3 h-3 text-primary" /> 256-bit Secure</span>
-                    <span className="flex items-center gap-2 px-3 py-1 bg-secondary/20 rounded-lg"><CheckCircle2 className="w-3 h-3 text-primary" /> Free for Indian Farmers</span>
+                    <span className="flex items-center gap-2 px-3 py-1 bg-secondary/20 rounded-lg"><CheckCircle2 className="w-3 h-3 text-primary" /> {t('secure_msg')}</span>
+                    <span className="flex items-center gap-2 px-3 py-1 bg-secondary/20 rounded-lg"><CheckCircle2 className="w-3 h-3 text-primary" /> {t('free_for_farmers')}</span>
                 </div>
             </motion.div>
         </div>

@@ -31,8 +31,11 @@ async def trigger_specific_call(farmer_id: int, request_type: str, db: Session =
     
     if request_type == "updates":
         # Irrigation Update
-        moisture = field.sensor_data[-1].soil_moisture if field.sensor_data else 42
-        temp = field.sensor_data[-1].temperature if field.sensor_data else 31
+        moisture = 42
+        temp = 31
+        if field and field.sensor_data:
+            moisture = field.sensor_data[-1].soil_moisture
+            temp = field.sensor_data[-1].temperature
         
         ai_data = {
             'farmer_name': farmer.name,
@@ -50,14 +53,22 @@ async def trigger_specific_call(farmer_id: int, request_type: str, db: Session =
         
     elif request_type == "crop_health":
         # Satellite Crop Health
-        latest_sat = db.query(SatelliteData).filter(SatelliteData.field_id == field.id).order_by(SatelliteData.timestamp.desc()).first() if field else None
+        latest_sat = None
+        if field:
+            latest_sat = db.query(SatelliteData).filter(SatelliteData.field_id == field.id).order_by(SatelliteData.timestamp.desc()).first()
+        
         ndvi = latest_sat.ndvi_value if latest_sat else 0.65
         status = latest_sat.health_status if latest_sat else "Healthy"
         
         prompts = {
             "English": f"Hello {farmer.name}, your crop health index is {ndvi}. The status is {status}.",
             "Hindi": f"नमस्ते {farmer.name}, आपकी फसल का स्वास्थ्य सूचकांक {ndvi} है। स्थिति {status} है।",
-            "Telugu": f"నమస్కారం {farmer.name}, మీ పంట ఆరోగ్య సూచిక {ndvi}. స్థితి {status}."
+            "Telugu": f"నమస్కారం {farmer.name}, మీ పంట ఆరోగ్య సూచిక {ndvi}. స్థితి {status}.",
+            "Tamil": f"வணக்கம் {farmer.name}, உங்கள் பயிர் ஆரோக்கிய குறியீடு {ndvi}. நிலை {status}.",
+            "Kannada": f"ನಮಸ್ಕಾರ {farmer.name}, ನಿಮ್ಮ ಬೆಳೆ ಆರೋಗ್ಯ ಸೂಚ್ಯಂಕ {ndvi}. ಸ್ಥಿತಿ {status}.",
+            "Marathi": f"नमस्ते {farmer.name}, तुमची पीक आरोग्य निर्देशांक {ndvi} आहे. स्थिती {status} आहे.",
+            "Bengali": f"নমস্কার {farmer.name}, আপনার ফসলের স্বাস্থ্য সূচক হল {ndvi}। অবস্থা হল {status}।",
+            "Gujarati": f"નમસ્તે {farmer.name}, તમારો પાક સ્વાસ્થ્ય સૂચકાંક {ndvi} છે. સ્થિતિ {status} છે."
         }
         message = prompts.get(lang, prompts["English"])
         twiml_url = f"{BASE_URL}/api/v1/voice/advisory-twiml?msg={message}&lang={lang}"
@@ -70,7 +81,12 @@ async def trigger_specific_call(farmer_id: int, request_type: str, db: Session =
         prompts = {
             "English": f"The current temperature is {temp} degrees. The sky is partly cloudy with low chance of rain today.",
             "Hindi": f"वर्तमान तापमान {temp} डिग्री है। आज बारिश की संभावना कम है।",
-            "Telugu": f"ప్రస్తుత ఉష్ణోగ్రత {temp} డిగ్రీలు. ఈరోజు వర్షం పడే అవకాశం తక్కువ."
+            "Telugu": f"ప్రస్తుత ఉష్ణోగ్రత {temp} డిగ్రీలు. ఈరోజు వర్షం పడే అవకాశం తక్కువ.",
+            "Tamil": f"தற்போதைய வெப்பநிலை {temp} டிகிரி. இன்று மழை பெய்ய வாய்ப்பு குறைவு.",
+            "Kannada": f"ಪ್ರಸ್ತುತ ತಾಪಮಾನ {temp} ಡಿಗ್ರಿ. ಇಂದು ಮಳೆ ಬರುವ ಸಾಧ್ಯತೆ ಕಡಿಮೆ.",
+            "Marathi": f"सध्याचे तापमान {temp} अंश आहे. आज पाऊस पडण्याची शक्यता कमी आहे.",
+            "Bengali": f"বর্তমান তাপমাত্রা হল {temp} ডিগ্রি। আজ বৃষ্টি হওয়ার সম্ভাবনা কম।",
+            "Gujarati": f"વર્તમાન તાપમાન {temp} ડિગ્રી છે. આજે વરસાદની શક્યતા ઓછી છે."
         }
         message = prompts.get(lang, prompts["English"])
         twiml_url = f"{BASE_URL}/api/v1/voice/advisory-twiml?msg={message}&lang={lang}"
@@ -105,7 +121,12 @@ async def pump_menu(request: Request, db: Session = Depends(get_db)):
     prompts = {
         "English": "Press 1 to turn ON the pump. Press 2 to turn OFF.",
         "Hindi": "पंप चालू करने के लिए 1 दबाएं। बंद करने के लिए 2 दबाएं।",
-        "Telugu": "పంప్ ఆన్ చేయడానికి 1 నొక్కండి. ఆఫ్ చేయడానికి 2 నొక్కండి."
+        "Telugu": "పంప్ ఆన్ చేయడానికి 1 నొక్కండి. ఆఫ్ చేయడానికి 2 నొక్కండి.",
+        "Tamil": "பம்ப் ஆன் செய்ய 1 ஐ அழுத்தவும். ஆஃப் செய்ய 2 ஐ அழுத்தவும்.",
+        "Kannada": "ಪಂಪ್ ಆನ್ ಮಾಡಲು 1 ಒತ್ತಿರಿ. ಆಫ್ ಮಾಡಲು 2 ಒತ್ತಿರಿ.",
+        "Marathi": "पंप चालू करण्यासाठी 1 दाबा. बंद करण्यासाठी 2 दाबा.",
+        "Bengali": "পাম্প চালু করতে 1 টিপুন। বন্ধ করতে 2 টিপুন।",
+        "Gujarati": "પંપ ચાલુ કરવા માટે 1 દબાવો. બંધ કરવા માટે 2 દબાવો."
     }
     
     gather = Gather(num_digits=1, action=f"{BASE_URL}/api/v1/voice/handle-pump", method='POST')
@@ -129,10 +150,36 @@ async def handle_pump(request: Request, db: Session = Depends(get_db)):
     lang = farmer.preferred_language if farmer else "English"
     lang_info = LANGUAGE_MAP.get(lang, LANGUAGE_MAP["English"])
     
+    field = db.query(Field).filter(Field.farmer_id == farmer.id).first() if farmer else None
+    
     if digit == "1":
-        msg = {"English": "Pump turned ON.", "Hindi": "पंप चालू हो गया।", "Telugu": "పంప్ ఆన్ చేయబడింది."}.get(lang, "Pump ON")
+        msg = {
+            "English": "Pump turned ON.",
+            "Hindi": "पंप चालू हो गया।",
+            "Telugu": "పంప్ ఆన్ చేయబడింది.",
+            "Tamil": "பம்ப் ஆன் செய்யப்பட்டது.",
+            "Kannada": "ಪಂಪ್ ಆನ್ ಆಗಿದೆ.",
+            "Marathi": "पंप चालू झाला.",
+            "Bengali": "পাম্প চালু হয়েছে।",
+            "Gujarati": "પંપ ચાલુ થયો."
+        }.get(lang, "Pump ON")
+        if field:
+            field.is_pump_on = True
+            db.commit()
     elif digit == "2":
-        msg = {"English": "Pump turned OFF.", "Hindi": "पंप बंद हो गया।", "Telugu": "పంప్ ఆఫ్ చేయబడింది."}.get(lang, "Pump OFF")
+        msg = {
+            "English": "Pump turned OFF.",
+            "Hindi": "पंप बंद हो गया।",
+            "Telugu": "పంప్ ఆఫ్ చేయబడింది.",
+            "Tamil": "பம்ப் ஆஃப் செய்யப்பட்டது.",
+            "Kannada": "ಪಂಪ್ ಆಫ್ ಆಗಿದೆ.",
+            "Marathi": "पंप बंद झाला.",
+            "Bengali": "পাম্প বন্ধ হয়েছে।",
+            "Gujarati": "પંપ બંધ થયો."
+        }.get(lang, "Pump OFF")
+        if field:
+            field.is_pump_on = False
+            db.commit()
     else:
         msg = "Invalid input."
 
@@ -162,7 +209,10 @@ async def save_language(request: Request, db: Session = Depends(get_db)):
     clean_phone = farmer_phone.replace('+', '').replace(' ', '')
     phone_suffix = clean_phone[-10:] if len(clean_phone) >= 10 else clean_phone
     
-    lang_map = {"1": "English", "2": "Hindi", "3": "Telugu", "4": "Tamil", "5": "Kannada"}
+    lang_map = {
+        "1": "English", "2": "Hindi", "3": "Telugu", "4": "Tamil", 
+        "5": "Kannada", "6": "Marathi", "7": "Bengali", "8": "Gujarati"
+    }
     selected_lang = lang_map.get(digit, "English")
     
     farmer = db.query(Farmer).filter(Farmer.phone_number.like(f"%{phone_suffix}%")).first()
@@ -179,7 +229,10 @@ async def save_language(request: Request, db: Session = Depends(get_db)):
         "Hindi": "धन्यवाद। आपकी भाषा सहेजी गई है।",
         "Telugu": "ధన్యవాదాలు. మీ భాష సేవ్ చేయబడింది.",
         "Tamil": "நன்றி. உங்கள் மொழி சேமிக்கப்பட்டது.",
-        "Kannada": "ಧನ್ಯವಾದಗಳು. ನಿಮ್ಮ ಭಾಷೆ ಉಳಿಸಲಾಗಿದೆ।"
+        "Kannada": "ಧನ್ಯವಾದಗಳು. ನಿಮ್ಮ ಭಾಷೆ ಉಳಿಸಲಾಗಿದೆ।",
+        "Marathi": "धन्यवाद. तुमची भाषा जतन केली गेली आहे.",
+        "Bengali": "ধন্যবাদ। আপনার ভাষা সংরক্ষিত হয়েছে।",
+        "Gujarati": "આભાર. તમારી ભાષા સાચવવામાં આવી છે."
     }
     
     v = LANGUAGE_MAP.get(selected_lang, LANGUAGE_MAP["English"])
@@ -210,7 +263,10 @@ async def ask_location(request: Request, db: Session = Depends(get_db)):
         "Hindi": "अब कृपया बीप के बाद अपने गाँव का नाम बताएं।",
         "Telugu": "దయచేసి బీప్ తర్వాత మీ గ్రామం పేరు చెప్పండి.",
         "Tamil": "பீப் ஒலிக்குப் பிறகு உங்கள் கிராமத்தின் பெயரைச் சொல்லுங்கள்.",
-        "Kannada": "ದಯವಿಟ್ಟು బీప్ తర్వాత మీ హళ్ళియ హెసరన్ను హేళి."
+        "Kannada": "ದಯವಿಟ್ಟು బీప్ తర్వాత మీ హళ్ళియ హెసరన్ను హేళి.",
+        "Marathi": "आता कृपया बीप नंतर तुमच्या गावाचे नाव सांगा.",
+        "Bengali": "এখন দয়া করে বিপিং শব্দের পরে আপনার গ্রামের নাম বলুন।",
+        "Gujarati": "હવે કૃપા કરીને બીપ પછી તમારા ગામનું નામ બોલો."
     }
     
     speech_lang_map = {"English": "en-IN", "Hindi": "hi-IN", "Telugu": "te-IN", "Tamil": "ta-IN", "Kannada": "kn-IN"}
@@ -258,7 +314,10 @@ async def save_location(request: Request, db: Session = Depends(get_db)):
         "Hindi": f"आपका स्थान {speech_result} के रूप में सहेजा गया है। अब अपनी फसल चुनें।",
         "Telugu": f"మీ స్థానం {speech_result} గా సేవ్ చేయబడింది. ఇప్పుడు మీ పంట ఎంచుకోండి.",
         "Tamil": f"உங்கள் இடம் {speech_result} ஆகச் சேமிக்கப்பட்டது. இப்போது உங்கள் பயிரைத் தேர்வு செய்யுங்கள்.",
-        "Kannada": f"ನಿಮ್ಮ ಸ್ಥಳವನ್ನು {speech_result} ಎಂದು ಉಳಿಸಲಾಗಿದೆ. ಈಗ ನಿಮ್ಮ ಬೆಳೆಯನ್ನು ಆಯ್ಕೆಮಾಡಿ."
+        "Kannada": f"ನಿಮ್ಮ ಸ್ಥಳವನ್ನು {speech_result} ಎಂದು ಉಳಿಸಲಾಗಿದೆ. ಈಗ ನಿಮ್ಮ ಬೆಳೆಯನ್ನು ಆಯ್ಕೆಮಾಡಿ.",
+        "Marathi": f"तुमचे स्थान {speech_result} म्हणून जतन केले गेले आहे. आता तुमचे पीक निवडा.",
+        "Bengali": f"আপনার অবস্থান {speech_result} হিসেবে সংরক্ষিত হয়েছে। এখন আপনার ফসল নির্বাচন করুন।",
+        "Gujarati": f"તમારું સ્થાન {speech_result} તરીકે સાચવવામાં આવ્યું છે. હવે તમારો પાક પસંદ કરો."
     }
     
     response.say(confirm.get(lang, confirm["English"]), voice=lang_info["voice"], language=lang_info["lang"])
@@ -286,7 +345,10 @@ async def ask_crop(request: Request, db: Session = Depends(get_db)):
         "Hindi": "चावल के लिए 1 दबाएं। गेहूं के लिए 2 दबाएं। मक्का के लिए 3 दबाएं। कपास के लिए 4 दबाएं। गन्ना के लिए 5 दबाएं।",
         "Telugu": "వరి కోసం 1 నొక్కండి. గోధుమ కోసం 2 నొక్కండి. మొక్కజొన్న కోసం 3 నొక్కండి. పత్తి కోసం 4 నొక్కండి. చెరకు కోసం 5 నొక్కండి.",
         "Tamil": "நெல்லுக்கு 1 அழுத்தவும். கோதுமைக்கு 2 அழுத்தவும். மக்காச்சோளத்திற்கு 3 அழுத்தவும். பருத்திக்கு 4 அழுத்தவும். கரும்புக்கு 5 அழுத்தவும்.",
-        "Kannada": "ಭತ್ತಕ್ಕಾಗಿ 1 ಒತ್ತಿರಿ. ಗೋಧಿಗಾಗಿ 2 ಒತ್ತಿರಿ. ಮೆಕ್ಕೆಜೋಳಕ್ಕಾಗಿ 3 ಒತ್ತಿರಿ. ಹತ್ತಿಗಾಗಿ 4 ಒತ್ತಿರಿ. ಕಬ್ಬಿಗಾಗಿ 5 ಒತ್ತಿರಿ."
+        "Kannada": "ಭತ್ತಕ್ಕಾಗಿ 1 ಒತ್ತಿರಿ. ಗೋಧಿಗಾಗಿ 2 ಒತ್ತಿರಿ. ಮೆಕ್ಕೆಜೋಳಕ್ಕಾಗಿ 3 ಒತ್ತಿರಿ. હತ್ತಿಗಾಗಿ 4 ಒತ್ತಿರಿ. ಕಬ್ಬಿಗಾಗಿ 5 ಒತ್ತಿರಿ.",
+        "Marathi": "भातासाठी 1 दाबा. गव्हासाठी 2 दाबा. मक्यासाठी 3 दाबा. कापसासाठी 4 दाबा. ऊसासाठी 5 दाबा.",
+        "Bengali": "ধানের জন্য 1 টিপুন। গমের জন্য 2 টিপুন। ভুট্টার জন্য 3 টিপুন। তুলোর জন্য 4 টিপুন। আখের জন্য 5 টিপুন।",
+        "Gujarati": "ડાંગર માટે 1 દબાવો. ઘઉં માટે 2 દબાવો. મકાઈ માટે 3 દબાવો. કપાસ માટે 4 દબાવો. શેરડી માટે 5 દબાવો."
     }
     
     gather = Gather(num_digits=1, action=f"{BASE_URL}/api/v1/voice/save-crop", method="POST")
@@ -326,7 +388,10 @@ async def save_crop(request: Request, db: Session = Depends(get_db)):
         "Hindi": {"Rice": "चावल", "Wheat": "गेहूं", "Maize": "मक्का", "Cotton": "कपास", "Sugarcane": "गन्ना"}.get(selected_crop, selected_crop),
         "Telugu": {"Rice": "వరి", "Wheat": "గోధుమ", "Maize": "మొక్కజొన్న", "Cotton": "పత్తి", "Sugarcane": "చెరకు"}.get(selected_crop, selected_crop),
         "Tamil": {"Rice": "நெல்", "Wheat": "கோதுமை", "Maize": "மக்காச்சோளம்", "Cotton": "பருத்தி", "Sugarcane": "கரும்பு"}.get(selected_crop, selected_crop),
-        "Kannada": {"Rice": "ಭತ್ತ", "Wheat": "ಗೋಧಿ", "Maize": "ಮೆಕ್ಕೆಜೋಳ", "Cotton": "ಹತ್ತಿ", "Sugarcane": "ಕಬ್ಬು"}.get(selected_crop, selected_crop)
+        "Kannada": {"Rice": "ಭತ್ತ", "Wheat": "ಗೋಧಿ", "Maize": "ಮೆಕ್ಕೆಜೋಳ", "Cotton": "ಹತ್ತಿ", "Sugarcane": "ಕಬ್ಬು"}.get(selected_crop, selected_crop),
+        "Marathi": {"Rice": "भात", "Wheat": "गहू", "Maize": "मका", "Cotton": "कापूस", "Sugarcane": "ऊस"}.get(selected_crop, selected_crop),
+        "Bengali": {"Rice": "ধান", "Wheat": "গম", "Maize": "ভুট্টা", "Cotton": "তুলা", "Sugarcane": "আখ"}.get(selected_crop, selected_crop),
+        "Gujarati": {"Rice": "ડાંગર", "Wheat": "ઘઉં", "Maize": "મકાઈ", "Cotton": "કપાસ", "Sugarcane": "શેરડી"}.get(selected_crop, selected_crop)
     }
     
     confirm = {
@@ -334,7 +399,10 @@ async def save_crop(request: Request, db: Session = Depends(get_db)):
         "Hindi": f"फसल {crop_names['Hindi']} के रूप में सहेजी गई। अब अपने खेत का क्षेत्रफल बताएं।",
         "Telugu": f"పంట {crop_names['Telugu']} గా సేవ్ చేయబడింది. ఇప్పుడు మీ పొలం విస్తీర్ణం చెప్పండి.",
         "Tamil": f"பயிர் {crop_names['Tamil']} ஆகச் சேமிக்கப்பட்டது. இப்போது உங்கள் வயல் பரப்பளவைச் சொல்லுங்கள்.",
-        "Kannada": f"ಬೆಳೆ {crop_names['Kannada']} ಎಂದು ಉಳಿಸಲಾಗಿದೆ. ಈಗ ನಿಮ್ಮ ಹೊಲದ ವಿಸ್ತೀರ್ಣವನ್ನು ಹೇಳಿ."
+        "Kannada": f"ಬೆಳೆ {crop_names['Kannada']} ಎಂದು ಉಳಿಸಲಾಗಿದೆ. ಈಗ ನಿಮ್ಮ ಹೊಲದ ವಿಸ್ತೀರ್ಣವನ್ನು ಹೇಳಿ.",
+        "Marathi": f"पीक {crop_names['Marathi']} म्हणून जतन केले गेले. आता तुमच्या शेताचे क्षेत्रफळ सांगा.",
+        "Bengali": f"ফসলের নাম {crop_names['Bengali']} হিসেবে সংরক্ষিত হয়েছে। এখন আপনার জমির পরিমাণ বলুন।",
+        "Gujarati": f"પાક {crop_names['Gujarati']} તરીકે સાચવવામાં આવ્યો. હવે તમારા ખેતરનો વિસ્તાર બોલો."
     }
     
     response.say(confirm.get(lang, confirm["English"]), voice=lang_info["voice"], language=lang_info["lang"])
@@ -436,7 +504,12 @@ async def ask_stage(request: Request, db: Session = Depends(get_db)):
     prompts = {
         "English": "Press 1 for Initial stage. Press 2 for Growing stage. Press 3 for Flowering stage. Press 4 for Harvesting stage.",
         "Hindi": "बुवाई के लिए 1। बढ़ने के लिए 2। फूलने के लिए 3। कटाई के लिए 4।",
-        "Telugu": "విత్తనం కోసం 1. పెరుగుదల కోసం 2. పూత కోసం 3. కోత కోసం 4."
+        "Telugu": "విత్తనం కోసం 1. పెరుగుదల కోసం 2. పూత కోసం 3. కోత కోసం 4.",
+        "Tamil": "ஆரம்ப நிலைக்கு 1. வளர்ச்சி நிலைக்கு 2. பூக்கும் நிலைக்கு 3. அறுவடை நிலைக்கு 4.",
+        "Kannada": "ಆರಂಭಿಕ ಹಂತಕ್ಕೆ 1. ಬೆಳೆಯುವ ಹಂತಕ್ಕೆ 2. ಹೂಬಿಡುವ ಹಂತಕ್ಕೆ 3. ಕೊಯ್ಲು ಹಂತಕ್ಕೆ 4.",
+        "Marathi": "सुरुवातीच्या अवस्थेसाठी 1 दाबा. वाढीच्या अवस्थेसाठी 2 दाबा. फुलोऱ्याच्या अवस्थेसाठी 3 दाबा. कापणीच्या अवस्थेसाठी 4 दाबा.",
+        "Bengali": "প্রাথমিক পর্যায়ের জন্য 1 টিপুন। বৃদ্ধির পর্যায়ের জন্য 2 টিপুন। ফুল আসার পর্যায়ের জন্য 3 টিপুন। ফসল কাটার পর্যায়ের জন্য 4 টিপুন।",
+        "Gujarati": "શરૂઆતના તબક્કા માટે 1 દબાવો. વિકાસના તબક્કા માટે 2 દબાવો. ફૂલ આવવાના તબક્કા માટે 3 દબાવો. લણણીના તબક્કા માટે 4 દબાવો."
     }
     
     gather = Gather(num_digits=1, action=f"{BASE_URL}/api/v1/voice/save-stage", method="POST")
@@ -471,7 +544,17 @@ async def save_stage(request: Request, db: Session = Depends(get_db)):
     lang = farmer.preferred_language if farmer else "English"
     lang_info = LANGUAGE_MAP.get(lang, LANGUAGE_MAP["English"])
     
-    response.say("Profile complete. Thank you! Goodbye.", voice=lang_info["voice"], language=lang_info["lang"])
+    final_msg = {
+        "English": "Profile complete. Thank you! Goodbye.",
+        "Hindi": "प्रोफ़ाइल पूरी हुई। धन्यवाद! अलविदा।",
+        "Telugu": "ప్రొఫైల్ పూర్తయింది. ధన్యవాదాలు! సెలవు.",
+        "Tamil": "சுயவிவரம் முடிந்தது. நன்றி! வணக்கம்.",
+        "Kannada": "ಪ್ರೊಫೈಲ್ ಪೂರ್ಣಗೊಂಡಿದೆ. ಧನ್ಯವಾದಗಳು! ಹೋಗಿ ಬನ್ನಿ.",
+        "Marathi": "प्रोफाइल पूर्ण झाले. धन्यवाद! पुन्हा भेटू.",
+        "Bengali": "প্রোফাইল সম্পূর্ণ হয়েছে। ধন্যবাদ! বিদায়।",
+        "Gujarati": "પ્રોફાઇલ પૂર્ણ થઈ. આભાર! આવજો."
+    }
+    response.say(final_msg.get(lang, final_msg["English"]), voice=lang_info["voice"], language=lang_info["lang"])
     return Response(content=str(response), media_type="application/xml")
 
 @router.get("/advisory-twiml")
@@ -498,7 +581,12 @@ async def handle_incoming_call(request: Request, db: Session = Depends(get_db)):
     greetings = {
         "English": f"Hello {farmer.name}. Press 1 for status. Press 2 for advice. Press 3 to change language.",
         "Hindi": f"नमस्ते {farmer.name}। स्थिति के लिए 1। सलाह के लिए 2। भाषा के लिए 3।",
-        "Telugu": f"నమస్కారం {farmer.name}. స్థితి కోసం 1. సలహా కోసం 2. భాష కోసం 3."
+        "Telugu": f"నమస్కారం {farmer.name}. స్థితి కోసం 1. సలహా కోసం 2. భాష కోసం 3.",
+        "Tamil": f"வணக்கம் {farmer.name}. நிலைக்கு 1 ஐ அழுத்தவும். ஆலோசனைக்கு 2 ஐ அழுத்தவும். மொழியை மாற்ற 3 ஐ அழுத்தவும்.",
+        "Kannada": f"ನಮಸ್ಕಾರ {farmer.name}. ಸ್ಥಿತಿಗಾಗಿ 1 ಒತ್ತಿರಿ. ಸಲಹೆಗಾಗಿ 2 ಒತ್ತಿರಿ. ಭಾಷೆ ಬದಲಾಯಿಸಲು 3 ಒತ್ತಿರಿ.",
+        "Marathi": f"नमस्ते {farmer.name}. स्थितीसाठी 1 दाबा. सल्ल्यासाठी 2 दाबा. भाषा बदलण्यासाठी 3 दाबा.",
+        "Bengali": f"নমস্কার {farmer.name}। অবস্থার জন্য 1 টিপুন। পরামর্শের জন্য 2 টিপুন। ভাষা পরিবর্তনের জন্য 3 টিপুন।",
+        "Gujarati": f"નમસ્તે {farmer.name}. સ્થિતિ માટે 1 દબાવો. સલાહ માટે 2 દબાવો. ભાષા બદલવા માટે 3 દબાવો."
     }
     
     gather = Gather(num_digits=1, action=f"{BASE_URL}/api/v1/voice/handle-menu", method='POST')

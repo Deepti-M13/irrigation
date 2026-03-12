@@ -2,39 +2,39 @@ import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { ArrowRight, Play } from "lucide-react";
 
-const slides = [
-  {
-    label: "Precision Agriculture",
-    title: "AI‑Powered Precision Irrigation for",
-    highlight: "Smarter Farming",
-    desc: "Monitor crop health, track soil moisture, and automate irrigation using IoT sensors, satellite data, and AI insights.",
-    cta1: "Get Started",
-    cta2: "View Dashboard Demo",
-    videoId: "O4c4vZVQmFE",
-  },
-  {
-    label: "Data-Driven Insights",
-    title: "Turn field data into",
-    highlight: "Real‑World Results",
-    desc: "From soil health to yield maps, get actionable insights delivered straight to your device in real time.",
-    cta1: "Get Started",
-    cta2: "See How It Works",
-    videoId: "ik5NOdwFAgc",
-  },
-  {
-    label: "Smart Hardware",
-    title: "Connected sensors for",
-    highlight: "Every Acre",
-    desc: "Our IoT-enabled hardware adapts to your fields — monitoring, measuring, and optimizing season after season.",
-    cta1: "Get Started",
-    cta2: "View Hardware",
-    videoId: "bZ5be7agkv4",
-  },
-];
-
-const HeroSection = ({ onGetStarted }) => {
+const HeroSection = ({ onGetStarted, t }) => {
   const [active, setActive] = useState(0);
   const [paused, setPaused] = useState(false);
+
+  const slides = [
+    {
+      label: t('precision_ag') || "Precision Agriculture",
+      title: t('heroTitle'),
+      highlight: t('heroHighlight'),
+      desc: t('heroDesc'),
+      cta1: t('getStarted'),
+      cta2: t('view_demo') || "View Dashboard Demo",
+      videoId: "O4c4vZVQmFE",
+    },
+    {
+      label: t('data_driven') || "Data-Driven Insights",
+      title: t('h_s2_t') || "Turn field data into",
+      highlight: t('h_s2_h') || "Real‑World Results",
+      desc: t('h_s2_d') || "From soil health to yield maps, get actionable insights delivered straight to your device in real time.",
+      cta1: t('getStarted'),
+      cta2: t('how_it_works_btn') || "See How It Works",
+      videoId: "ik5NOdwFAgc",
+    },
+    {
+      label: t('smart_hardware') || "Smart Hardware",
+      title: t('h_s3_t') || "Connected sensors for",
+      highlight: t('h_s3_h') || "Every Acre",
+      desc: t('h_s3_d') || "Our IoT-enabled hardware adapts to your fields — monitoring, measuring, and optimizing season after season.",
+      cta1: t('getStarted'),
+      cta2: t('view_hardware') || "View Hardware",
+      videoId: "bZ5be7agkv4",
+    },
+  ];
 
   useEffect(() => {
     if (paused) return;
