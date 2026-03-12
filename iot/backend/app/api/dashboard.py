@@ -83,6 +83,16 @@ async def get_irrigation_history(field_id: int, db: Session = Depends(get_db)):
     history = db.query(IrrigationHistory).filter(IrrigationHistory.field_id == field_id).order_by(IrrigationHistory.start_time.desc()).limit(10).all()
     return history
 
+@router.get("/sensor-history/{field_id}")
+async def get_sensor_history(field_id: int, db: Session = Depends(get_db)):
+    """Get the last 50 sensor data points for trend analysis"""
+    history = (db.query(SensorData)
+              .filter(SensorData.field_id == field_id)
+              .order_by(SensorData.timestamp.desc())
+              .limit(50)
+              .all())
+    return history[::-1]
+
 @router.get("/satellite-insights/{field_id}")
 async def get_satellite_insights(field_id: int, db: Session = Depends(get_db)):
     """Get detailed satellite-based insights for a field"""

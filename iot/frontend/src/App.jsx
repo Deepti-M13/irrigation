@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import {
-  Droplets, Thermometer, Wind, Activity,
+  Droplets, Thermometer, Wind, Activity, Gauge,
   MapPin, Calendar, Power, AlertTriangle,
   ChevronRight, TrendingUp, History, User, Phone, LogOut, Loader2,
   Sun, Sunrise, CloudRain, Settings, X, Home, Cloud, Sprout, CalendarDays, Satellite, Languages
@@ -34,6 +34,18 @@ const API_BASE = window.location.hostname.includes('ngrok') || window.location.p
   : `http://${window.location.hostname}:8000/api/v1`;
 window.API_BASE = API_BASE;
 console.log("Using API_BASE:", API_BASE);
+
+const languageLabels = {
+  English: "English",
+  Hindi: "हिंदी",
+  Telugu: "తెలుగు",
+  Tamil: "தமிழ்",
+  Malayalam: "മലയാളം",
+  Kannada: "ಕನ್ನಡ",
+  Marathi: "मराठी",
+  Bengali: "বাংলা",
+  Gujarati: "ગુજરાતી"
+};
 
 const translations = {
   English: {
@@ -176,6 +188,8 @@ const translations = {
     days: "DAYS",
     waterFlow: "Water Flow",
     humidity: "Humidity",
+    waterUsed: "Water Used",
+    today: "Today",
     imp_tag: "Impact",
     imp_title: "Why GraminLink matters",
     imp_desc: "Reduce water usage, increase crop productivity, prevent crop stress, and enable data‑driven farming.",
@@ -387,6 +401,8 @@ const translations = {
     days: "दिन",
     waterFlow: "पानी का बहाव",
     humidity: "नमी",
+    waterUsed: "उपयोग किया गया पानी",
+    today: "आज",
     imp_tag: "प्रभाव",
     imp_tag: "प्रभाव",
     imp_title: "ग्रामीणलिंक क्यों महत्वपूर्ण है",
@@ -598,6 +614,8 @@ const translations = {
     days: "రోజులు",
     waterFlow: "నీటి ప్రవాహం",
     humidity: "తేమ",
+    waterUsed: "వినియోగించిన నీరు",
+    today: "నేడు",
     imp_tag: "ప్రభావం",
     imp_title: "గ్రామీణలింక్ ఎందుకు ముఖ్యం",
     imp_desc: "నీటి వినియోగాన్ని తగ్గించండి, పంట ఉత్పాదకతను పెంచండి, పంట నష్టాన్ని నివారించండి మరియు డేటాతో కూడిన వ్యవసాయాన్ని ప్రారంభించండి.",
@@ -808,6 +826,8 @@ const translations = {
     days: "நாட்கள்",
     waterFlow: "நீர் ஓட்டம்",
     humidity: "ஈரப்பதம்",
+    waterUsed: "பயன்படுத்தப்பட்ட நீர்",
+    today: "இன்று",
     imp_tag: "தாக்கம்",
     imp_title: "ஏன் கிராமீன்லிங்க் முக்கியமானது",
     imp_desc: "தண்ணீரைச் சேமிக்கவும், விளைச்சலை உயர்த்தவும்.",
@@ -1018,6 +1038,8 @@ const translations = {
     days: "ദിവസങ്ങൾ",
     waterFlow: "ജലപ്രവാഹം",
     humidity: "ആർദ്രത",
+    waterUsed: "ഉപയോഗിച്ച വെള്ളം",
+    today: "ഇന്ന്",
     imp_tag: "സ്വാധീനം",
     imp_title: "ഗ്രാമിൻലിങ്ക് എന്തിന്",
     imp_desc: "ജല ഉപയോഗം കുറയ്ക്കാനും വിളവ് വർദ്ധിപ്പിക്കാനും സഹായിക്കുന്നു.",
@@ -1228,6 +1250,8 @@ const translations = {
     days: "ದಿನಗಳು",
     waterFlow: "ನೀರಿನ ಹರಿವು",
     humidity: "ಆರ್ದ್ರತೆ",
+    waterUsed: "ಬಳಸಿದ ನೀರು",
+    today: "ಇಂದು",
     imp_tag: "ಪರಿಣಾಮ",
     imp_title: "ಗ್ರಾಮೀಣಲಿಂಕ್ ಏಕೆ ಮುಖ್ಯ",
     imp_desc: "ನೀರಿನ ಬಳಕೆಯನ್ನು ಕಡಿಮೆ ಮಾಡಿ, ಬೆಳೆ ಉತ್ಪಾದಕತೆಯನ್ನು ಹೆಚ್ಚಿಸಿ ಮತ್ತು ಡೇಟಾ-ಚಾಲಿತ ಕೃಷಿಯನ್ನು ಸಕ್ರಿಯಗೊಳಿಸಿ.",
@@ -1438,6 +1462,8 @@ const translations = {
     days: "दिवस",
     waterFlow: "पाण्याचा प्रवाह",
     humidity: "आद्रता",
+    waterUsed: "वापरलेले पाणी",
+    today: "आज",
     imp_tag: "प्रभाव",
     imp_title: "ग्रामीणलिंक का महत्त्वाचे आहे",
     imp_desc: "पाण्याचा वापर कमी करा, उत्पादकता वाढवा आणि डेटा-आधारित शेती सक्षम करा.",
@@ -1648,6 +1674,8 @@ const translations = {
     days: "দিন",
     waterFlow: "জলের প্রবাহ",
     humidity: "আর্দ্রতা",
+    waterUsed: "ব্যবহৃত জল",
+    today: "আজ",
     imp_tag: "প্রভাব",
     imp_title: "কেন গ্রামীণলিঙ্ক গুরুত্বপূর্ণ",
     imp_desc: "জলের ব্যবহার কমান, উৎপাদনশীলতা বাড়ান এবং ডেটা-চালিত চাষাবাদ সক্ষম করুন।",
@@ -1858,6 +1886,8 @@ const translations = {
     days: "દિવસો",
     waterFlow: "પાણીનો પ્રવાહ",
     humidity: "ભેજ",
+    waterUsed: "વપરાયેલું પાણી",
+    today: "આજે",
     imp_tag: "અસર",
     imp_title: "ગ્રામીનલિંક કેમ મહત્વનું છે",
     imp_desc: "પાણીનો વપરાશ ઘટાડો, ઉત્પાદકતા વધારો અને ડેટા સંચાલિત ખેતી સક્રિય કરો.",
@@ -2022,15 +2052,22 @@ const App = () => {
           })
           .catch(handleAuthError);
 
-        axios.get(`${API_BASE}/dashboard/history/${userIdToUse}`, headers)
+        axios.get(`${API_BASE}/dashboard/sensor-history/${userIdToUse}`, headers)
           .then(histRes => {
             if (Array.isArray(histRes.data)) {
-              setHistory(histRes.data.map(h => ({
-                time: h.start_time ? new Date(h.start_time).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) : '--:--',
-                moisture: 40,
-                water: h.water_used || 0,
-                date: h.start_time ? new Date(h.start_time).toLocaleDateString('en-US', { month: 'short', day: 'numeric' }) : '---'
-              })));
+              setHistory(histRes.data.map(h => {
+                // Fix for space in timestamp "YYYY-MM-DD HH:MM:SS" -> "YYYY-MM-DDTHH:MM:SS"
+                const dateStr = h.timestamp ? h.timestamp.replace(' ', 'T') : null;
+                const d = dateStr ? new Date(dateStr) : null;
+                const isValid = d && !isNaN(d.getTime());
+                
+                return {
+                  time: isValid ? d.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit' }) : '--:--',
+                  moisture: Number(h.soil_moisture) || 0,
+                  temperature: Number(h.temperature) || 0,
+                  date: isValid ? d.toLocaleDateString('en-US', { month: 'short', day: 'numeric' }) : '---'
+                };
+              }));
             }
           }).catch(handleAuthError);
 
@@ -2083,8 +2120,8 @@ const App = () => {
     longitude: 78.4867,
     profile_photo: null,
     field_info: { id: 1, crop: "Rice", area: 2.5, stage: "Vegetative" },
-    sensor_data: { soil_moisture: 42, temperature: 31, humidity: 65, flow_rate: 12.5 },
-    ndvi: { ndvi_value: 0.72, interpretation: "Healthy crops", stress_alert: false },
+    sensor_data: { soil_moisture: 0, temperature: 0, humidity: 0, flow_rate: 0 },
+    ndvi: { ndvi_value: 0.0, interpretation: "Waiting for data...", stress_alert: false },
     pump_status: "OFF",
     weather: {
       temperature: 32,
@@ -2154,6 +2191,7 @@ const App = () => {
   const currentStatus = {
     ...mockData,
     ...(data || {}),
+    sensor_data: data?.sensor_data || mockData.sensor_data, // Ensure real data takes priority
     farmer_name: profile?.profile?.name || data?.farmer_name || mockData.farmer_name,
     farmer_village: profile?.farm?.village || data?.farmer_village || mockData.farmer_village,
     profile_photo: profile?.profile?.profile_photo || null,
@@ -2250,10 +2288,11 @@ const App = () => {
         <p className="text-muted-foreground font-medium">{t('home_subtitle')}</p>
       </motion.div>
 
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4 mb-8">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-6 gap-4 mb-8">
         {[
-          { icon: Droplets, label: t('soilMoisture'), value: `${currentStatus.sensor_data?.soil_moisture || 42}%`, status: 'Optimal', color: 'text-primary', bg: 'bg-primary/10', delay: 0.1 },
-          { icon: Thermometer, label: t('temperature'), value: `${currentStatus.sensor_data?.temperature || 31}°C`, status: 'Warm', color: 'text-orange-500', bg: 'bg-orange-500/10', delay: 0.2 },
+          { icon: Droplets, label: t('soilMoisture'), value: `${currentStatus.sensor_data?.soil_moisture ?? 0}%`, status: 'Optimal', color: 'text-primary', bg: 'bg-primary/10', delay: 0.1 },
+          { icon: Thermometer, label: t('temperature'), value: `${currentStatus.sensor_data?.temperature ?? 0}°C`, status: 'Warm', color: 'text-orange-500', bg: 'bg-orange-500/10', delay: 0.2 },
+          { icon: Wind, label: t('humidity_label') || "Humidity", value: `${currentStatus.sensor_data?.humidity ?? 0}%`, status: 'Normal', color: 'text-blue-400', bg: 'bg-blue-400/10', delay: 0.25 },
           { icon: Power, label: t('pumpStatus'), value: pumpOn ? 'ON' : 'OFF', status: pumpOn ? 'Active' : 'Standby', color: pumpOn ? 'text-green-500' : 'text-red-500', bg: pumpOn ? 'bg-green-500/10' : 'bg-red-500/10', delay: 0.3 },
           { icon: Satellite, label: 'Sat NDVI', value: satelliteData?.ndvi_value || "0.00", status: satelliteData?.status || "Analyzing", color: satelliteData?.ndvi_value > 0.6 ? 'text-green-500' : 'text-yellow-500', bg: 'bg-indigo-500/10', delay: 0.4 },
           { icon: Activity, label: t('aiAdvice'), value: currentStatus.ai_insights ? 'Action Recommended' : 'No Action', status: currentStatus.ai_insights ? 'Check Details' : 'System Stable', color: 'text-purple-500', bg: 'bg-purple-500/10', delay: 0.5 },
@@ -2359,12 +2398,12 @@ const App = () => {
           </div>
 
           <div className="grid grid-cols-2 gap-4 w-full md:w-auto">
-            {[
-              { icon: Droplets, label: t('humidity_label'), value: '55%', color: 'text-blue-500', bg: 'bg-blue-500/10' },
-              { icon: Wind, label: t('wind'), value: '12 km/h', color: 'text-slate-400', bg: 'bg-slate-400/10' },
-              { icon: CloudRain, label: t('rain_chance'), value: '0%', color: 'text-indigo-400', bg: 'bg-indigo-400/10' },
-              { icon: Sunrise, label: t('sunrise_label'), value: currentStatus.weather?.sunrise || '06:30', color: 'text-orange-400', bg: 'bg-orange-400/10' },
-            ].map((stat, i) => (
+              {[
+                { icon: Droplets, label: t('humidity_label'), value: `${currentStatus.sensor_data?.humidity ?? 55}%`, color: 'text-blue-500', bg: 'bg-blue-500/10' },
+                { icon: Wind, label: t('wind'), value: '12 km/h', color: 'text-slate-400', bg: 'bg-slate-400/10' },
+                { icon: CloudRain, label: t('rain_chance'), value: '0%', color: 'text-indigo-400', bg: 'bg-indigo-400/10' },
+                { icon: Sunrise, label: t('sunrise_label'), value: currentStatus.weather?.sunrise || '06:30', color: 'text-orange-400', bg: 'bg-orange-400/10' },
+              ].map((stat, i) => (
               <div key={i} className="bg-secondary/30 p-4 rounded-2xl flex flex-col items-center justify-center text-center gap-1 border border-border/50">
                 <stat.icon size={18} className={stat.color} />
                 <div className="text-[10px] uppercase font-bold text-muted-foreground tracking-widest mt-1">{stat.label}</div>
@@ -2410,12 +2449,14 @@ const App = () => {
         <p className="text-muted-foreground font-medium">{t('soil_subtitle')}</p>
       </motion.div>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-6 gap-6">
         {[
-          { icon: Droplets, label: t('soilMoisture'), value: `${currentStatus.sensor_data?.soil_moisture || 42.0}%`, status: t('optimal'), color: '#3b82f6', fill: 'bg-blue-500' },
-          { icon: Thermometer, label: t('temperature'), value: `${currentStatus.sensor_data?.temperature || 31.0}°C`, status: t('warm'), color: '#f59e0b', fill: 'bg-orange-500' },
-          { icon: Wind, label: t('humidity_label'), value: '58.0%', status: t('normal'), color: '#10b981', fill: 'bg-green-500' },
-          { icon: Activity, label: t('waterFlow') || 'Water Flow', value: '0.0 L/min', status: t('stopped'), color: '#6b7280', fill: 'bg-slate-500' },
+          { icon: Droplets, label: t('soilMoisture'), value: `${currentStatus.sensor_data?.soil_moisture ?? 0.0}%`, status: t('optimal'), color: '#3b82f6', fill: 'bg-blue-500' },
+          { icon: Thermometer, label: t('temperature'), value: `${currentStatus.sensor_data?.temperature ?? 0.0}°C`, status: t('warm'), color: '#f59e0b', fill: 'bg-orange-500' },
+          { icon: Wind, label: t('humidity_label'), value: `${currentStatus.sensor_data?.humidity ?? 0.0}%`, status: t('normal'), color: '#10b981', fill: 'bg-green-500' },
+          { icon: Activity, label: t('waterFlow') || 'Water Flow', value: `${currentStatus.sensor_data?.flow_rate ?? 0.0} L/min`, status: pumpOn ? 'Flowing' : t('stopped'), color: pumpOn ? '#10b981' : '#6b7280', fill: pumpOn ? 'bg-green-500' : 'bg-slate-500' },
+          { icon: Gauge, label: t('waterUsed') || 'Water Used', value: `0.00 L`, status: t('today') || 'Today', color: '#6366f1', fill: 'bg-indigo-500' },
+          { icon: Power, label: t('pumpStatus'), value: pumpOn ? 'ON' : 'OFF', status: pumpOn ? 'Active' : 'Standby', color: pumpOn ? '#10b981' : '#ef4444', fill: pumpOn ? 'bg-green-500' : 'bg-red-500' },
         ].map((item, i) => (
           <motion.div
             key={i}
@@ -2451,21 +2492,41 @@ const App = () => {
 
         <div className="h-[350px] w-full mt-4">
           <ResponsiveContainer width="100%" height="100%">
-            <AreaChart data={history}>
+            <AreaChart data={history || []} margin={{ left: 0, right: 10, top: 10, bottom: 0 }}>
               <defs>
                 <linearGradient id="colorMoisture" x1="0" y1="0" x2="0" y2="1">
-                  <stop offset="5%" stopColor="#eab308" stopOpacity={0.3} />
+                  <stop offset="5%" stopColor="#eab308" stopOpacity={0.6} />
                   <stop offset="95%" stopColor="#eab308" stopOpacity={0} />
                 </linearGradient>
               </defs>
-              <CartesianGrid strokeDasharray="3 3" stroke="#334155" vertical={false} />
-              <XAxis dataKey="time" stroke="#64748b" fontSize={11} fontWeight="bold" />
-              <YAxis stroke="#64748b" fontSize={11} fontWeight="bold" />
+              <CartesianGrid strokeDasharray="3 3" stroke="#334155" vertical={false} opacity={0.2} />
+              <XAxis 
+                dataKey="time" 
+                stroke="#64748b" 
+                fontSize={10} 
+                fontWeight="bold"
+                tickMargin={10}
+              />
+              <YAxis 
+                stroke="#64748b" 
+                fontSize={10} 
+                fontWeight="bold" 
+                domain={[0, 100]}
+                width={30}
+              />
               <Tooltip
                 contentStyle={{ backgroundColor: '#1e293b', border: '1px solid #334155', borderRadius: '1rem', padding: '12px' }}
                 itemStyle={{ color: '#eab308', fontWeight: 'bold' }}
               />
-              <Area type="monotone" dataKey="moisture" stroke="#eab308" strokeWidth={3} fillOpacity={1} fill="url(#colorMoisture)" />
+              <Area 
+                type="monotone" 
+                dataKey="moisture" 
+                stroke="#eab308" 
+                strokeWidth={3} 
+                fillOpacity={1} 
+                fill="url(#colorMoisture)"
+                animationDuration={1500}
+              />
             </AreaChart>
           </ResponsiveContainer>
         </div>
@@ -2782,7 +2843,10 @@ const App = () => {
   return (
     <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="dashboard-container bg-background min-h-screen">
       <header className="header bg-card border-b border-border px-6 py-4 flex items-center justify-between sticky top-0 z-50">
-        <div className="flex items-center gap-3">
+        <div 
+          className="flex items-center gap-3 cursor-pointer select-none active:scale-95 transition-transform"
+          onClick={() => setActiveTab('home')}
+        >
           <div className="w-10 h-10 rounded-xl bg-primary flex items-center justify-center shadow-lg shadow-primary/20">
             <Droplets size={24} color="white" />
           </div>
@@ -2811,16 +2875,24 @@ const App = () => {
 
           <div className="h-6 w-px bg-border hidden sm:block mx-1" />
 
-          <div className="flex bg-secondary/50 p-1 rounded-xl border border-border">
-            {['English', 'Hindi', 'Telugu', 'Tamil', 'Malayalam'].map((lang) => (
-              <button
-                key={lang}
-                onClick={() => changeLanguage(lang)}
-                className={`px-2 py-1 rounded-lg text-[9px] font-bold uppercase tracking-wider transition-all ${currentLang === lang ? 'bg-primary text-primary-foreground shadow-sm' : 'text-muted-foreground hover:text-foreground'}`}
+          <div className="relative group">
+            <div className="flex items-center gap-2 px-3 py-2 bg-secondary/50 rounded-xl border border-border">
+              <Languages size={14} className="text-muted-foreground" />
+              <select
+                value={currentLang}
+                onChange={(e) => changeLanguage(e.target.value)}
+                className="bg-transparent text-[11px] font-bold uppercase tracking-wider outline-none cursor-pointer appearance-none pr-4"
               >
-                {lang.substring(0, 3)}
-              </button>
-            ))}
+                {Object.keys(translations).map((lang) => (
+                  <option key={lang} value={lang} className="bg-card text-foreground">
+                    {languageLabels[lang] || lang}
+                  </option>
+                ))}
+              </select>
+              <div className="absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none">
+                <ChevronRight size={10} className="rotate-90 text-muted-foreground" />
+              </div>
+            </div>
           </div>
 
           <div className="h-6 w-px bg-border hidden sm:block mx-1" />

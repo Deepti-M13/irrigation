@@ -43,14 +43,23 @@ async def register_farmer(farmer_in: FarmerCreate, background_tasks: BackgroundT
     db.commit()
     db.refresh(new_farmer)
     
-    # Create Field for the farmer with default values
-    # These will be updated during the AI voice call
+    # Determine season automatically based on current month
+    current_month = datetime.utcnow().month
+    if 6 <= current_month <= 10:
+        detected_season = "Kharif"
+    elif current_month >= 11 or current_month <= 3:
+        detected_season = "Rabi"
+    else:
+        detected_season = "Zaid"
+    
+    # Create Field for the farmer with detected values
     new_field = Field(
         farmer_id=new_farmer.id,
         crop_type=farmer_in.crop_type or "Unknown",
         field_area=farmer_in.field_area or 1.0,
         growth_stage=farmer_in.growth_stage or "Initial",
-        season=farmer_in.season or "Kharif"
+        season=detected_season,
+        planting_date=datetime.utcnow()
     )
     db.add(new_field)
     

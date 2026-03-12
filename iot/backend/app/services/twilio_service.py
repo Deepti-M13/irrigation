@@ -13,16 +13,31 @@ TWILIO_ACCOUNT_SID = os.getenv("TWILIO_ACCOUNT_SID")
 TWILIO_AUTH_TOKEN = os.getenv("TWILIO_AUTH_TOKEN")
 TWILIO_PHONE_NUMBER = os.getenv("TWILIO_PHONE_NUMBER")
 
-# Language mapping for Twilio <Say> with Google voices
+# Language mapping for Twilio <Say>
+# Using specific Polly voices for Indian languages where supported
 LANGUAGE_MAP = {
     "English": {"lang": "en-IN", "voice": "Polly.Raveena"},
     "Hindi": {"lang": "hi-IN", "voice": "Polly.Aditi"},
-    "Telugu": {"lang": "te-IN", "voice": "Polly.Aditi"},
-    "Tamil": {"lang": "ta-IN", "voice": "Polly.Aditi"},
-    "Kannada": {"lang": "kn-IN", "voice": "Polly.Aditi"},
+    "Telugu": {"lang": "te-IN", "voice": "Polly.Chitra"},
+    "Tamil": {"lang": "ta-IN", "voice": "Polly.Vani"},
+    "Kannada": {"lang": "kn-IN", "voice": "Polly.Hiya"},
     "Marathi": {"lang": "mr-IN", "voice": "Polly.Aditi"},
     "Bengali": {"lang": "bn-IN", "voice": "Polly.Aditi"},
-    "Gujarati": {"lang": "gu-IN", "voice": "Polly.Aditi"}
+    "Gujarati": {"lang": "gu-IN", "voice": "Polly.Aditi"},
+    "Malayalam": {"lang": "ml-IN", "voice": "Polly.Aditi"}
+}
+
+# Centralized mapping for speech recognition
+SPEECH_LANG_MAP = {
+    "English": "en-IN",
+    "Hindi": "hi-IN",
+    "Telugu": "te-IN",
+    "Tamil": "ta-IN",
+    "Kannada": "kn-IN",
+    "Marathi": "mr-IN",
+    "Bengali": "bn-IN",
+    "Gujarati": "gu-IN",
+    "Malayalam": "ml-IN"
 }
 
 class TwilioVoiceService:
@@ -58,12 +73,13 @@ class TwilioVoiceService:
         # Keep it SHORT to fit within trial time limit
         gather.say("English press 1.", voice="Polly.Raveena", language="en-IN")
         gather.say("हिंदी के लिए 2 दबाएं।", voice="Polly.Aditi", language="hi-IN")
-        gather.say("తెలుగు కోసం 3 నొక్కండి.", voice="Polly.Aditi", language="te-IN")
-        gather.say("தமிழுக்கு 4 அழுத்தவும்.", voice="Polly.Aditi", language="ta-IN")
-        gather.say("ಕನ್ನಡಕ್ಕಾಗಿ 5 ಒತ್ತಿರಿ.", voice="Polly.Aditi", language="kn-IN")
+        gather.say("తెలుగు కోసం 3 నొక్కండి.", voice="Polly.Chitra", language="te-IN")
+        gather.say("தமிழுக்கு 4 அழுத்தவும்.", voice="Polly.Vani", language="ta-IN")
+        gather.say("ಕನ್ನಡಕ್ಕಾಗಿ 5 ಒತ್ತಿರಿ.", voice="Polly.Hiya", language="kn-IN")
         gather.say("मराठीसाठी 6 दाबा.", voice="Polly.Aditi", language="mr-IN")
         gather.say("বাংলার জন্য 7 টিপুন।", voice="Polly.Aditi", language="bn-IN")
         gather.say("ગુજરાતી માટે 8 દબાવો.", voice="Polly.Aditi", language="gu-IN")
+        gather.say("മലയാളത്തിനായി 9 അമർത്തുക.", voice="Polly.Aditi", language="ml-IN")
         
         response.append(gather)
         response.redirect(f"{base_url}/api/v1/voice/language-selection")
@@ -85,11 +101,12 @@ class TwilioVoiceService:
             "English": "Soil moisture is still low. Press 1 to continue irrigation. Press 2 to stop irrigation.",
             "Hindi": "मिट्टी की नमी अभी भी कम है। सिंचाई जारी रखने के लिए 1 दबाएं। रोकने के लिए 2 दबाएं।",
             "Telugu": "నేల తేమ ఇంకా తక్కువగా ఉంది. సాగును కొనసాగించడానికి 1 నొక్కండి. నిలిపివేయడానికి 2 నొక్కండి.",
-            "Tamil": "மண் ஈரப்பதம் இன்னும் குறைவாக உள்ளது. நீர்ப்பாசனத்தைத் தொடர 1 ஐ அழுத்தவும். நிறுத்த 2 ஐ அழுத்தவும்.",
+            "Tamil": "மண் ஈரப்பதம் ఇంకా குறைவாக உள்ளது. நீர்ப்பாசனத்தைத் தொடர 1 ஐ அழுத்தவும். நிறுத்த 2 ஐ அழுத்தவும்.",
             "Kannada": "ಮಣ್ಣಿನ ತೇವಾಂಶ ಇನ್ನೂ ಕಡಿಮೆಯಿದೆ. ನೀರಾವರಿ ಮುಂದುವರಿಸಲು 1 ಒತ್ತಿರಿ. ನಿಲ್ಲಿಸಲು 2 ಒತ್ತಿರಿ.",
             "Marathi": "जमिनीतील ओलावा अजूनही कमी आहे. सिंचन सुरू ठेवण्यासाठी 1 दाबा. थांबवण्यासाठी 2 दाबा.",
             "Bengali": "মাটির আর্দ্রতা এখনও কম। সেচ চালিয়ে যেতে 1 টিপুন। বন্ধ করতে 2 টিপুন।",
-            "Gujarati": "જમીનનો ભેજ હજુ ઓછો છે. સિંચાઈ ચાલુ રાખવા માટે 1 દબાવો. બંધ કરવા માટે 2 દબાવો。"
+            "Gujarati": "જમીનનો ભેજ હજુ ઓછો છે. સિંચાઈ ચાલુ રાખવા માટે 1 દબાવો. બંધ કરવા માટે 2 દબાવો।",
+            "Malayalam": "മണ്ണ് ഈർപ്പം ഇപ്പോഴും കുറവാണ്. ജലസേചനം തുടരാൻ 1 അമർത്തുക. നിർത്താൻ 2 അമർത്തുക."
         }
         
         text = alert_texts.get(language, alert_texts["English"])

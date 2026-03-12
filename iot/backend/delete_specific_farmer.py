@@ -46,5 +46,5 @@ if __name__ == "__main__":
     # User's exact request: 86939975947
     # Previous search showed: 8639975947
     # Using the overlapping digits to catch both/either
-    target = "975947"
+    target = "8639975947"
     find_and_delete(target)
