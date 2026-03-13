@@ -101,7 +101,7 @@ Your IoT precision irrigation system is now fully operational with ML models and
 
 ### Environment Variables (.env)
 ```
-GROQ_API_KEY=***REMOVED***
+GROQ_API_KEY=your_groq_api_key_here
 TWILIO_ACCOUNT_SID=your_sid
 TWILIO_AUTH_TOKEN=your_token
 JWT_SECRET=super-secret-iot-key-123
